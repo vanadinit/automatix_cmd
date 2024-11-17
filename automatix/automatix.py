@@ -99,7 +99,10 @@ class Automatix:
         print()
         self.env.LOG.info('Commandline Steps:')
         for cmd in command_list:
-            self.env.LOG.info(f"({cmd.index}) [{cmd.orig_key}]: {cmd.get_resolved_value()}")
+            if cmd.orig_key == 'section':
+                self.env.LOG.info(f" -- {cmd.get_resolved_value()} -- ({cmd.index})")
+            else:
+                self.env.LOG.info(f"({cmd.index}) [{cmd.orig_key}]: {cmd.get_resolved_value()}")
 
     def _execute_command_list(self, name: str, start_index: int, treat_as_main: bool):
         try:

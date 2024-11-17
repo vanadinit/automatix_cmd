@@ -232,11 +232,13 @@ The **scriptfile** has to contain valid YAML.
           import mylib as nc
           PERSISTENT_VARS.update(locals())
     pipeline:
+      - section: preparation
       - remote@target: systemctl stop server
       - remote@source: zfs snapshot -r tank@before-migration
       - manual: Please trigger preparing tasks via webinterface
       - myvar=local: curl -L -vvv -k https://{domain}/
       - local: echo "1.1.1.1 {domain}" >> /etc/hosts
+      - section: migration
       - sla=python: NODES.source.metadata.get('sla')
       - python: |
             sla = '{sla}'
@@ -307,22 +309,26 @@ Here you define the commands automatix shall execute.
 
 **KEY**: One of these possible command actions:
 
-1) **manual**: Some manual instruction for the user. The user has to
+1) **section**: Just prints the **VALUE** in a special formatted way
+ to structure your script and inform the user, that a new section is
+ about to start.
+
+2) **manual**: Some manual instruction for the user. The user has to
  confirm, that automatix may proceed.
 
-2) **local**: Local shell command to execute. Imports will be sourced
+3) **local**: Local shell command to execute. Imports will be sourced
  beforehand. The Bash specified in `bash_path` (default: /bin/bash) will
  be used for execution. The environment is inherited with additional
  **RUNNING_INSIDE_AUTOMATIX** set to 1.
 
-3) **remote@systemname**: Remote shell command to execute. Systemname
+4) **remote@systemname**: Remote shell command to execute. Systemname
  has to be a defined system. The command will be run via SSH (without
   pseudo-terminal allocation). It uses the standard SSH command.
   Therefore your .ssh/config should be respected.
  If systemname is a Bundlewrap group, the remote command will be
   executed sequentially for every node.
 
-4) **python**: Python code to execute.
+5) **python**: Python code to execute.
    * Notice that the variable `a_vars` is used
      to store the Automatix variables as a dictionary. You can use it 
      to access or change the variables directly.

@@ -3,7 +3,7 @@ import re
 import subprocess
 from code import InteractiveConsole
 from shlex import quote
-from time import time
+from time import time, sleep
 from typing import Tuple
 
 from .environment import PipelineEnvironment
@@ -81,6 +81,8 @@ class Command:
         return round(own_position / overall_command_count * 100, 1)
 
     def get_type(self):
+        if self.key == 'section':
+            return 'section'
         if self.key == 'local':
             return 'local'
         if self.key == 'manual':
@@ -114,6 +116,13 @@ class Command:
         print()
         self.env.LOG.notice(f'({self.index}) [{self.orig_key}]: {self.get_resolved_value()}')
 
+    def print_section(self):
+        print()
+        print()
+        self.env.LOG.notice(f' -- {self.get_resolved_value()} -- ({self.index})')
+        print()
+        sleep(1)
+
     def show_and_change_variables(self):
         print()
         self.env.LOG.info('Variables:')
@@ -146,7 +155,11 @@ class Command:
             draw_progress_bar(self.progress_portion)
 
     def _execute(self, interactive: bool = False, force: bool = False):
-        self.print_command()
+        if self.get_type() == 'section':
+            self.print_section()
+            return
+        else:
+            self.print_command()
 
         if not self._check_condition():
             self.env.LOG.info('Skip command, because the condition is not met.')

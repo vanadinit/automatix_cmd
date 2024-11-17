@@ -21,10 +21,10 @@ def test__automatix__get_command_position():
     assert testauto.get_command_position(index=3, pipeline='always') != 4
     assert testauto.get_command_position(index=3, pipeline='main') == 7  # 4 commands in always pipeline
     assert testauto.get_command_position(index=3, pipeline='pipeline') == 7  # 4 commands in always pipeline
-    assert testauto.get_command_position(index=2, pipeline='cleanup') == 23  # 21 commands in always + main pipeline
+    assert testauto.get_command_position(index=2, pipeline='cleanup') == 26  # 21 commands in always + main pipeline
 
 
 def test__automatix__set_command_count():
     testauto.env.command_count = None
     testauto.set_command_count()
-    assert testauto.env.command_count == 24
+    assert testauto.env.command_count == 27
